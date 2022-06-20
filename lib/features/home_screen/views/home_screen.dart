@@ -16,37 +16,63 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     // TODO: implement initState
-    ProductsViewModel.read(context).add(GetProductsList());
+    var vm = ProductsViewModel.read(context);
+    vm.add(GetProductsList());
+    _scrollController.addListener(() {
+      if (_scrollController.offset ==
+          _scrollController.position.maxScrollExtent) {
+        if ((vm.products?.data?.products?.count! ?? 0) >
+            (vm.productsList?.length ?? 0)) {
+          offset = offset + 10;
+          vm.add(GetProductsList(
+              searchValue:
+                  _searchController.text.isEmpty ? "" : _searchController.text,
+              offset: offset));
+        }
+      }
+    });
     super.initState();
   }
 
+  int offset = 10;
+  final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
   @override
   Widget build(BuildContext context) {
     var vm = ProductsViewModel.watch(context);
     Widget _buildProductsCard(
         BuildContext context, ProductListModel model, List<Result>? list) {
       return Expanded(
-        child: ListView.builder(
-            itemCount: vm.productsList?.length,
-            itemBuilder: (context, index) {
-              var data = vm.productsList![index];
-              return Container(
-                margin: const EdgeInsets.all(8.0),
-                child: Card(
-                  child: Container(
-                    margin: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: <Widget>[
-                        Text("Name: ${data.productName}"),
-                        Text("id: ${data.id}"),
-                        Text("brand: ${data.brand}"),
-                        Text("amount: ${data.amount}"),
-                      ],
+        child: GridView.builder(
+          itemCount: list?.length,
+          controller: _scrollController,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 10.0,
+              mainAxisSpacing: 10.0,
+              mainAxisExtent: 132),
+          itemBuilder: (BuildContext context, int index) {
+            var data = vm.productsList![index];
+            return GestureDetector(
+                onTap: () {},
+                child: Container(
+                  margin: const EdgeInsets.all(8.0),
+                  child: Card(
+                    child: Container(
+                      margin: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: <Widget>[
+                          Text("Name: ${data.productName}"),
+                          Text("id: ${data.id}"),
+                          Text("brand: ${data.brand}"),
+                          Text("amount: ${data.amount}"),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              );
-            }),
+                ));
+          },
+        ),
       );
     }
 
@@ -59,7 +85,9 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             CommonTextField(
               hintText: "Search Product",
+              controller: _searchController,
               onFieldSubmitted: (v) {
+                offset = 10;
                 ProductsViewModel.read(context)
                     .add(GetProductsList(searchValue: v));
               },

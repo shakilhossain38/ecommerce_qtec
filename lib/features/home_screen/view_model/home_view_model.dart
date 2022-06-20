@@ -85,6 +85,7 @@ class ProductsViewModel extends Bloc<ProductsEvent, ProductsState> {
   ProductsViewModel() : super(ProductsInitial()) {
     on<GetProductsList>((event, emit) async {
       emit(ProductsLoading());
+      print("event offset ${event.offset}");
       var res = await ProductListRepository()
           .fetchProducts(searchValue: event.searchValue);
       res.fold((l) {
@@ -92,9 +93,12 @@ class ProductsViewModel extends Bloc<ProductsEvent, ProductsState> {
         // notifyListeners();
       }, (r) {
         if (event.offset != 10) {
-        } else {
           products = r;
           productsList = [...?productsList, ...?r.data?.products?.results];
+          emit(ProductsLoaded(r, r.data?.products?.results));
+        } else {
+          products = r;
+          productsList = r.data?.products?.results;
           emit(ProductsLoaded(r, r.data?.products?.results));
         }
       });
