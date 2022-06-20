@@ -78,9 +78,11 @@ class ProductsLoaded extends ProductsState {
 class ProductsViewModel extends Bloc<ProductsEvent, ProductsState> {
   static ProductsViewModel read(BuildContext context) =>
       context.read<ProductsViewModel>();
+  final TextEditingController searchController = TextEditingController();
   List<Result>? productsList = [];
   ProductListModel? products;
   bool? isLoading = false;
+  var focusNode = FocusNode();
   static ProductsViewModel watch(BuildContext context) =>
       context.watch<ProductsViewModel>();
   ProductsViewModel() : super(ProductsInitial()) {
@@ -98,11 +100,13 @@ class ProductsViewModel extends Bloc<ProductsEvent, ProductsState> {
         if (event.offset != 0) {
           products = r;
           isLoading = false;
+          searchController.text = event.searchValue ?? "";
           productsList = [...?productsList, ...?r.data?.products?.results];
           emit(ProductsLoaded(r, r.data?.products?.results));
         } else {
           isLoading = false;
           products = r;
+          searchController.text = event.searchValue ?? "";
           productsList = r.data?.products?.results;
           emit(ProductsLoaded(r, r.data?.products?.results));
         }

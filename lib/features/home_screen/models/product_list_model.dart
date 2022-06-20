@@ -109,7 +109,7 @@ class Result {
   Brand? brand;
   String? image;
   Charge? charge;
-  List<Image>? images;
+  List<ImagesList>? images;
   String? slug;
   String? productName;
   String? model;
@@ -149,7 +149,7 @@ class Result {
         charge: json["charge"] == null ? null : Charge.fromJson(json["charge"]),
         images: json["images"] == null
             ? null
-            : List<Image>.from(json["images"].map((x) => Image.fromJson(x))),
+            : List<ImagesList>.from(json["images"].map((x) => ImagesList.fromJson(x))),
         slug: json["slug"],
         productName: json["product_name"],
         model: json["model"],
@@ -273,8 +273,8 @@ class Charge {
       );
 }
 
-class Image {
-  Image({
+class ImagesList {
+  ImagesList({
     this.id,
     this.image,
     this.isPrimary,
@@ -286,7 +286,7 @@ class Image {
   bool? isPrimary;
   int? product;
 
-  factory Image.fromJson(Map<String, dynamic> json) => Image(
+  factory ImagesList.fromJson(Map<String, dynamic> json) => ImagesList(
         id: json["id"],
         image: json["image"],
         isPrimary: json["is_primary"],
