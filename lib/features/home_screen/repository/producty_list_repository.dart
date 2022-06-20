@@ -11,8 +11,11 @@ import '../../../main_app/utils/api_client.dart';
 
 class ProductListRepository {
   Future<Either<AppError, ProductListModel>> fetchProducts(
-      {String? searchValue, int offset = 10}) async {
-    BotToast.showLoading();
+      {String? searchValue, int offset = 0}) async {
+    if (offset == 0) {
+      BotToast.showLoading();
+    }
+    print("offseeeeee $offset");
     var response = await ApiClient().getRequest(
         "${Urls.productsUrl}&offset=$offset&search=${searchValue ?? ""}");
     debugPrint('products ${response.body}');

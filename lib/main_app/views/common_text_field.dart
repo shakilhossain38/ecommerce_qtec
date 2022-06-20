@@ -75,7 +75,7 @@ class CommonTextField extends StatelessWidget {
       this.suffixIcon,
       this.borderRadius = 12,
       this.onTap,
-      this.margin = const EdgeInsets.all(5),
+      this.margin = const EdgeInsets.all(0),
       this.keyboardType,
       this.leftContentPadding = 15,
       this.contentPadding =

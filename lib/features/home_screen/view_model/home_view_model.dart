@@ -54,7 +54,7 @@ abstract class ProductsEvent extends Equatable {
 class GetProductsList extends ProductsEvent {
   String? searchValue;
   int? offset;
-  GetProductsList({this.searchValue, this.offset = 10});
+  GetProductsList({this.searchValue, this.offset = 0});
 }
 
 // part of 'covid_bloc.dart';
@@ -80,23 +80,28 @@ class ProductsViewModel extends Bloc<ProductsEvent, ProductsState> {
       context.read<ProductsViewModel>();
   List<Result>? productsList = [];
   ProductListModel? products;
+  bool? isLoading = false;
   static ProductsViewModel watch(BuildContext context) =>
       context.watch<ProductsViewModel>();
   ProductsViewModel() : super(ProductsInitial()) {
     on<GetProductsList>((event, emit) async {
+      if (event.offset != 0) {
+        isLoading = true;
+      }
       emit(ProductsLoading());
       print("event offset ${event.offset}");
       var res = await ProductListRepository()
-          .fetchProducts(searchValue: event.searchValue);
+          .fetchProducts(searchValue: event.searchValue, offset: event.offset!);
       res.fold((l) {
-        // _appError = l;
-        // notifyListeners();
+        isLoading = false;
       }, (r) {
-        if (event.offset != 10) {
+        if (event.offset != 0) {
           products = r;
+          isLoading = false;
           productsList = [...?productsList, ...?r.data?.products?.results];
           emit(ProductsLoaded(r, r.data?.products?.results));
         } else {
+          isLoading = false;
           products = r;
           productsList = r.data?.products?.results;
           emit(ProductsLoaded(r, r.data?.products?.results));
