@@ -3,5 +3,6 @@ class Urls {
       // FlavorConfig.isProduction()
       //   "https://programming.flaxsoft.com";
 
-      "https://panel.supplyline.network/api/";
+      "https://panel.supplyline.network";
+  static String productsUrl = "/api/product/search-suggestions/?limit=10";
 }

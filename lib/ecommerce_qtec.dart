@@ -2,8 +2,8 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'features/home_screen/home_screen.dart';
-import 'features/home_view_model/home_view_model.dart';
+import 'features/home_screen/view_model/home_view_model.dart';
+import 'features/home_screen/views/home_screen.dart';
 
 class EcommerceQtecInit extends StatelessWidget {
   const EcommerceQtecInit({Key? key}) : super(key: key);
