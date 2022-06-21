@@ -33,7 +33,7 @@
   </tr>
  </table>
 
-## Download APKhttps:
+## Download APK
 <a id="raw-url" href="https://drive.google.com/uc?export=download&id=1tV6zyuWCVKTHbF9vq-Dw6B5WcYxYfa_e">Link</a>
 
 ## Project Environment
