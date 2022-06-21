@@ -1,16 +1,48 @@
-# ecommerce_qtec
 
-A new Flutter project.
+  
+# Qtec_Shop
+<table>
+  <tr>
+    <td>
+      <img src="assets/qtec_logo.png" height=70 align="left"> 
+    <p>A Product Selling App
+      </p>
+    </td>
+  </tr>
+</table>
+<table>
+  <tr>
+     <td>Product Screen</td>
+  </tr>
+  <tr>
+    <td><img src="https://drive.google.com/uc?export=download&id=1k-0jYNPorJZhZsbn4NqDAmJOHvvBV71w" width=270 ></td>
+  </tr>
+ </table>
 
-## Getting Started
+## Project Environment:
+```
+=> Flutter (Channel stable, 2.10.3)
+=> Android Studio (version 2021.2.1)
+=> Dart SDK version: 2.16.3 (stable) 
+```
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+## Feature List
+```
+├── Product List
+├── Pagination
+├── Product Search
+├── Product Details
+```
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+## Used Package:
+```
+1. flutter_bloc - for state management
+2. bot_toast - for loader and toast message
+3. http - for api calling
+5. flutter_html - for html text
+6. dartz - for handling errors
+7. carousel_slider - for slider
+8. cached_network_image - for network images
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```
