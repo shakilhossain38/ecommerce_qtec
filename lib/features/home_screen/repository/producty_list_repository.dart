@@ -29,6 +29,7 @@ class ProductListRepository {
         return const Left(AppError.serverError);
       }
     } catch (c) {
+      BotToast.closeAllLoading();
       return const Left(AppError.networkError);
     }
   }
