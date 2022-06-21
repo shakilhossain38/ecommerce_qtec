@@ -35,10 +35,8 @@
   </tr>
  </table>
 
-## Download APK:
-```
-<a id="raw-url" href="https://drive.google.com/uc?export=download&id=1B0M2iNp2FEToBYoP1kEigx12utorM7fy">Download link</a>
-```
+## Download APK
+<a id="raw-url" href="https://drive.google.com/uc?export=download&id=1B0M2iNp2FEToBYoP1kEigx12utorM7fy">Click here</a>
 
 ## Project Environment:
 ```
