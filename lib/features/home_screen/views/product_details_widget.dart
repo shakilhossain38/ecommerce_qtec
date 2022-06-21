@@ -1,17 +1,24 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:ecommerce_qtec/features/home_screen/models/product_list_model.dart';
+import 'package:ecommerce_qtec/main_app/resource/string_resources.dart';
 import 'package:ecommerce_qtec/main_app/views/common_text_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 
 import '../../../main_app/resource/colors.dart';
+import '../view_model/counter_bloc.dart';
 import '../view_model/home_view_model.dart';
 
 class ProductDetailsWidget extends StatefulWidget {
   final Result? product;
-  const ProductDetailsWidget({Key? key, this.product}) : super(key: key);
+  final int? index;
+  final int? cartValue;
+  const ProductDetailsWidget(
+      {Key? key, this.product, this.index, this.cartValue})
+      : super(key: key);
 
   @override
   State<ProductDetailsWidget> createState() => _ProductDetailsWidgetState();
@@ -20,6 +27,7 @@ class ProductDetailsWidget extends StatefulWidget {
 class _ProductDetailsWidgetState extends State<ProductDetailsWidget> {
   @override
   Widget build(BuildContext context) {
+    var counterVm = CounterBloc.watch(context);
     var spaceBetween = const SizedBox(
       height: 10,
     );
@@ -44,8 +52,9 @@ class _ProductDetailsWidgetState extends State<ProductDetailsWidget> {
               const SizedBox(
                 width: 10,
               ),
-              const Text("প্রোডাক্ট ডিটেইল",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              Text(StringResources.productDetailsText,
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w600)),
             ],
           ),
         ],
@@ -55,22 +64,21 @@ class _ProductDetailsWidgetState extends State<ProductDetailsWidget> {
       // readOnly: true,
       isFilled: true,
       margin: EdgeInsets.all(8),
-      hintText: "কাঙ্ক্ষিত পণ্যটি খুঁজুন",
+      hintText: StringResources.searchProductText,
       fillColor: Colors.white,
       onFieldSubmitted: (v) {
+        counterVm.cartValue = 0;
+        counterVm.add(CartReset());
         Navigator.pop(context);
         ProductsViewModel.read(context).add(GetProductsList(searchValue: v));
       },
-      // onTap: () {
-      //
-      // },
     );
     var productDetails = widget.product;
     var slider = CarouselSlider.builder(
       itemCount: widget.product?.images?.length,
       itemBuilder: (BuildContext context, int a, int i) {
         return Container(
-          margin: EdgeInsets.all(5.0),
+          margin: const EdgeInsets.all(5.0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -99,16 +107,13 @@ class _ProductDetailsWidgetState extends State<ProductDetailsWidget> {
         enlargeCenterPage: true,
         aspectRatio: 16 / 9,
         disableCenter: false,
-        //onPageChanged: onPageChange,
-        //autoPlay: true,
       ),
-      //carouselController: _controller,
     );
     var productName = Text(productDetails?.productName ?? "",
         style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600));
     var brandDetails = Row(
       children: [
-        Text("ব্রান্ডঃ ",
+        Text("${StringResources.brandText} ",
             style: TextStyle(fontSize: 16, color: AppTheme.greyColor)),
         spaceAround,
         SizedBox(
@@ -129,55 +134,110 @@ class _ProductDetailsWidgetState extends State<ProductDetailsWidget> {
               borderRadius: BorderRadius.circular(50)),
         ),
         spaceAround,
-        Text("ডিস্ট্রিবিউটরঃ ",
+        Text("${StringResources.distributorText} ",
             style: TextStyle(fontSize: 16, color: AppTheme.greyColor)),
         Text(
             productDetails?.model == "" || productDetails?.model == null
-                ? "QTec"
+                ? StringResources.qtecrText
                 : productDetails?.model ?? "",
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
       ],
     );
+    var cartNumber = widget.index != counterVm.index
+        ? const SizedBox()
+        : Positioned(
+            bottom: 50,
+            left: 75,
+            right: 0,
+            child: Center(
+              child: Container(
+                height: 35,
+                width: 35,
+                decoration: BoxDecoration(
+                    color: AppTheme.babyPinkColor,
+                    border: Border.all(color: Colors.white, width: 2),
+                    borderRadius: BorderRadius.circular(50)),
+                child: Center(
+                  child: Text(
+                    counterVm.cartValue.toString(),
+                    style: TextStyle(
+                        color: AppTheme.secondaryPinkColor, fontSize: 13),
+                  ),
+                ),
+              ),
+            ),
+          );
     var cartPolygon = productDetails?.stock == 0
         ? const SizedBox()
         : Positioned(
             bottom: 0,
             left: 0,
             right: 0,
-            child: Container(
-                height: 90,
-                width: 90,
-                // alignment: Alignment.center,
-                decoration: const BoxDecoration(
-                    // color: Colors.red,
-                    image: DecorationImage(
-                        image: AssetImage("assets/polygon.png"))),
-                child: Center(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Text(
-                        "এটি",
-                        style: TextStyle(color: Colors.white, fontSize: 20),
-                      ),
-                      Text(
-                        "কিনুন",
-                        style: TextStyle(color: Colors.white, fontSize: 20),
-                      ),
-                    ],
-                  ),
-                )),
+            child: GestureDetector(
+              onTap: () {
+                if (widget.index != counterVm.index) {
+                  counterVm.add(CartIndex(index: widget.index!));
+                  counterVm.cartValue = 0;
+                  counterVm.add(CounterIncrementPressed());
+                }
+              },
+              child: Container(
+                  height: 90,
+                  width: 90,
+                  // alignment: Alignment.center,
+                  decoration: const BoxDecoration(
+                      // color: Colors.red,
+                      image: DecorationImage(
+                          image: AssetImage("assets/polygon.png"))),
+                  child: Center(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        widget.index == counterVm.index
+                            ? const Icon(
+                                Icons.add_shopping_cart_sharp,
+                                color: Colors.white,
+                              )
+                            : Text(
+                                StringResources.thisText,
+                                style: const TextStyle(
+                                    color: Colors.white, fontSize: 20),
+                              ),
+                        SizedBox(
+                          height: widget.index == counterVm.index ? 5 : 0,
+                        ),
+                        Text(
+                          widget.index == counterVm.index
+                              ? StringResources.cartText
+                              : StringResources.boughtText,
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 20),
+                        ),
+                      ],
+                    ),
+                  )),
+            ),
           );
+    var width = MediaQuery.of(context).size.width;
+    var buyPrice = widget.index != counterVm.index
+        ? productDetails?.charge?.currentCharge
+        : ((productDetails?.charge?.currentCharge ?? 0) * counterVm.cartValue);
+    var sellPrice = widget.index != counterVm.index
+        ? productDetails?.charge?.sellingPrice
+        : ((productDetails?.charge?.sellingPrice ?? 0) * counterVm.cartValue);
+    var totalProfit = widget.index != counterVm.index
+        ? productDetails?.charge?.profit
+        : ((productDetails?.charge?.profit ?? 0) * counterVm.cartValue);
     var buyRate = Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text("ক্রয়মূল্যঃ",
+        Text(StringResources.buyRateText,
             style: TextStyle(
                 fontSize: 20,
                 color: AppTheme.secondaryPinkColor,
                 fontWeight: FontWeight.w600)),
-        Text("৳ ${productDetails?.charge?.currentCharge.toString() ?? ""}",
+        Text("৳ $buyPrice",
             style: TextStyle(
                 fontSize: 20,
                 color: AppTheme.secondaryPinkColor,
@@ -187,9 +247,74 @@ class _ProductDetailsWidgetState extends State<ProductDetailsWidget> {
     var sellRate = Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text("বিক্রয়মূল্যঃ",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-        Text("৳ ${productDetails?.charge?.sellingPrice.toString() ?? ""}",
+        Text(StringResources.sellRateText,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+        widget.index != counterVm.index
+            ? const SizedBox()
+            : Center(
+                child: Container(
+                  width: width * .4,
+                  height: 35,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    color: AppTheme.lightPinkColor,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8.0, right: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            if (counterVm.cartValue == 1) {
+                              counterVm.add(CartReset());
+                            }
+                            counterVm.add(CounterDecrementPressed());
+                          },
+                          child: Container(
+                            height: 28,
+                            width: 28,
+                            decoration: BoxDecoration(
+                                color: AppTheme.babyPinkColor,
+                                borderRadius: BorderRadius.circular(50)),
+                            child: const Center(
+                                child: Icon(Icons.remove, color: Colors.white)),
+                          ),
+                        ),
+                        Text(
+                          "${counterVm.cartValue} ${StringResources.pieceText}",
+                          style: TextStyle(color: AppTheme.secondaryPinkColor),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            if (counterVm.cartValue <
+                                (productDetails?.maximumOrder ?? 0)) {
+                              counterVm.add(CounterIncrementPressed());
+                            } else {
+                              BotToast.showText(
+                                  text:
+                                      "${StringResources.maxOrderText} ${productDetails?.maximumOrder} ${StringResources.pieceText}");
+                            }
+                          },
+                          child: Container(
+                            height: 28,
+                            width: 28,
+                            decoration: BoxDecoration(
+                                color: AppTheme.primaryColor,
+                                borderRadius: BorderRadius.circular(50)),
+                            child: const Center(
+                                child: Icon(
+                              Icons.add,
+                              color: Colors.white,
+                            )),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+        Text("৳ $sellPrice",
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
       ],
     );
@@ -208,46 +333,59 @@ class _ProductDetailsWidgetState extends State<ProductDetailsWidget> {
       children: [
         const Text("লাভঃ",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-        Text("৳ ${productDetails?.charge?.profit.toString() ?? ""}",
+        Text("৳ $totalProfit",
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
       ],
     );
-    var detailsTitleText = const Positioned(
-      bottom: 20,
+    var detailsTitleText = Positioned(
+      bottom: 15,
       left: 0,
       right: 0,
-      child: Text("বিস্তারিত",
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+      child: Text(StringResources.detailText,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
     );
     var priceBox = SizedBox(
-      height: 200,
+      height: widget.index != counterVm.index ? 200 : 210,
       child: Stack(
         children: [
           SizedBox(
-            height: 140,
+            height: widget.index != counterVm.index ? 140 : 150,
             child: Container(
-              // height: 150,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 color: Colors.white,
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  children: [
-                    buyRate,
-                    spaceBetween,
-                    sellRate,
-                    spaceBetween,
-                    divider,
-                    spaceBetween,
-                    profit,
-                  ],
-                ),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        buyRate,
+                        spaceBetween,
+                        sellRate,
+                        spaceBetween,
+                      ],
+                    ),
+                  ),
+                  divider,
+                  Padding(
+                    padding: const EdgeInsets.only(left: 12.0, right: 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        spaceBetween,
+                        profit,
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
           cartPolygon,
+          cartNumber,
           detailsTitleText,
         ],
       ),

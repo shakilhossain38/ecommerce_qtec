@@ -80,6 +80,9 @@ class ProductsViewModel extends Bloc<ProductsEvent, ProductsState> {
 
   ProductsViewModel() : super(ProductsInitial()) {
     on<GetProductsList>((event, emit) async {
+      if (event.offset != 0) {
+        isLoading = true;
+      }
       emit(ProductsLoading());
       var res = await ProductListRepository()
           .fetchProducts(searchValue: event.searchValue, offset: event.offset!);

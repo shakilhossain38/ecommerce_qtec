@@ -12,14 +12,23 @@ class CartIndex extends CounterEvent {
 
 class CounterDecrementPressed extends CounterEvent {}
 
+class CartReset extends CounterEvent {}
+
 class CounterBloc extends Bloc<CounterEvent, int> {
   static CounterBloc read(BuildContext context) => context.read<CounterBloc>();
   static CounterBloc watch(BuildContext context) =>
       context.watch<CounterBloc>();
   int _index = -1;
+  int _cartValue = 0;
   int get index => _index;
   set index(int? i) {
     _index = i!;
+  }
+
+  int get cartValue => _cartValue;
+  set cartValue(int? i) {
+    _cartValue = i!;
+    emit(_cartValue);
   }
 
   CounterBloc() : super(0) {
@@ -27,7 +36,19 @@ class CounterBloc extends Bloc<CounterEvent, int> {
       _index = event.index;
       emit(event.index);
     });
-    on<CounterIncrementPressed>((event, emit) => emit(state + 1));
-    on<CounterDecrementPressed>((event, emit) => emit(state - 1));
+    on<CounterIncrementPressed>((event, emit) {
+      _cartValue = _cartValue + 1;
+      emit(_cartValue);
+    });
+    on<CounterDecrementPressed>((event, emit) {
+      if (_cartValue > 0) {
+        _cartValue = _cartValue - 1;
+      }
+      emit(_cartValue);
+    });
+    on<CartReset>((event, emit) {
+      _index = -1;
+      emit(_index);
+    });
   }
 }

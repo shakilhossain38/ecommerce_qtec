@@ -15,7 +15,6 @@ class ProductListRepository {
     if (offset == 0) {
       BotToast.showLoading();
     }
-    print("offseeeeee $offset");
     var response = await ApiClient().getRequest(
         "${Urls.productsUrl}&offset=$offset&search=${searchValue ?? ""}");
     debugPrint('products ${response.body}');
