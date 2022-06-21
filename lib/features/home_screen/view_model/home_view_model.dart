@@ -39,11 +39,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../repository/producty_list_repository.dart';
 
-// import 'package:ftips_bloc_fetch_api/models/covid_model.dart';
-// import 'package:ftips_bloc_fetch_api/resources/api_repository.dart';
-//
-// part 'covid_event.dart';
-// part 'covid_state.dart';
 abstract class ProductsEvent extends Equatable {
   const ProductsEvent();
 
@@ -56,8 +51,6 @@ class GetProductsList extends ProductsEvent {
   int? offset;
   GetProductsList({this.searchValue, this.offset = 0});
 }
-
-// part of 'covid_bloc.dart';
 
 abstract class ProductsState extends Equatable {
   const ProductsState();
@@ -78,20 +71,16 @@ class ProductsLoaded extends ProductsState {
 class ProductsViewModel extends Bloc<ProductsEvent, ProductsState> {
   static ProductsViewModel read(BuildContext context) =>
       context.read<ProductsViewModel>();
+  static ProductsViewModel watch(BuildContext context) =>
+      context.watch<ProductsViewModel>();
   final TextEditingController searchController = TextEditingController();
   List<Result>? productsList = [];
   ProductListModel? products;
   bool? isLoading = false;
-  var focusNode = FocusNode();
-  static ProductsViewModel watch(BuildContext context) =>
-      context.watch<ProductsViewModel>();
+
   ProductsViewModel() : super(ProductsInitial()) {
     on<GetProductsList>((event, emit) async {
-      if (event.offset != 0) {
-        isLoading = true;
-      }
       emit(ProductsLoading());
-      print("event offset ${event.offset}");
       var res = await ProductListRepository()
           .fetchProducts(searchValue: event.searchValue, offset: event.offset!);
       res.fold((l) {

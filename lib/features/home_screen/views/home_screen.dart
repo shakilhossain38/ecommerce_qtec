@@ -6,6 +6,7 @@ import 'package:ecommerce_qtec/main_app/views/common_text_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../view_model/counter_bloc.dart';
 import '../view_model/home_view_model.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -21,6 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // TODO: implement initState
     var vm = ProductsViewModel.read(context);
     vm.add(GetProductsList());
+
     _scrollController.addListener(() {
       if (_scrollController.offset ==
           _scrollController.position.maxScrollExtent) {
@@ -45,9 +47,11 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     var vm = ProductsViewModel.watch(context);
+    var counterVm = CounterBloc.watch(context);
     var spaceBetween = const SizedBox(
       height: 10,
     );
+    var width = MediaQuery.of(context).size.width;
     Widget _buildProductsCard(
         BuildContext context, ProductListModel model, List<Result>? list) {
       return list?.length == 0
@@ -75,18 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     builder: (_) => ProductDetailsWidget(
                                           product: list![index],
                                         )))
-                                .then((value) {
-                              // FocusScope.of(context).requestFocus(vm.focusNode);
-                            });
-                            // if (focus == true) {
-                            //   FocusScope.of(context).requestFocus(vm.focusNode);
-                            // }
-                            // Navigator.push(
-                            //     context,
-                            //     MaterialPageRoute(
-                            //         builder: (context) => ProductDetailsWidget(
-                            //               product: list![index],
-                            //             )));
+                                .then((value) {});
                           },
                           child: SizedBox(
                             height: 250,
@@ -226,21 +219,120 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         data.stock == 0
                             ? const SizedBox()
-                            : Positioned(
-                                bottom: 0,
-                                left: 0,
-                                right: 0,
-                                child: CircleAvatar(
-                                  backgroundColor: AppTheme.primaryColor,
-                                  radius: 20,
-                                  child: const ClipRRect(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(50)),
-                                      child: Icon(
-                                        Icons.add,
-                                        color: Colors.white,
-                                      )),
-                                ),
+                            : BlocBuilder<CounterBloc, int>(
+                                builder: (context, count) {
+                                  return Positioned(
+                                    bottom: 0,
+                                    left: 0,
+                                    right: 0,
+                                    child: index == counterVm.index
+                                        ? Center(
+                                            child: Container(
+                                              width: width * .4,
+                                              height: 35,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(15),
+                                                color: AppTheme.lightPinkColor,
+                                              ),
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 8.0, right: 8),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    GestureDetector(
+                                                      onTap: () {
+                                                        // if (vm.totalCartItem! > 0) {
+                                                        //   vm.totalCartItem =
+                                                        //       (vm.totalCartItem! -
+                                                        //           1);
+                                                        // }
+                                                      },
+                                                      child: Container(
+                                                        height: 32,
+                                                        width: 32,
+                                                        decoration: BoxDecoration(
+                                                            color: AppTheme
+                                                                .babyPinkColor,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        50)),
+                                                        child: const Center(
+                                                            child: Icon(
+                                                                Icons.remove,
+                                                                color: Colors
+                                                                    .white)),
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      "${counterVm.index} পিস",
+                                                      style: TextStyle(
+                                                          color: AppTheme
+                                                              .secondaryPinkColor),
+                                                    ),
+                                                    GestureDetector(
+                                                      onTap: () {
+                                                        // vm.totalCartItem =
+                                                        //     (vm.totalCartItem! + 1);
+                                                      },
+                                                      child: Container(
+                                                        height: 32,
+                                                        width: 32,
+                                                        decoration: BoxDecoration(
+                                                            color: AppTheme
+                                                                .primaryColor,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        50)),
+                                                        child: const Center(
+                                                            child: Icon(
+                                                          Icons.add,
+                                                          color: Colors.white,
+                                                        )),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                        : GestureDetector(
+                                            onTap: () {
+                                              context
+                                                  .read<CounterBloc>()
+                                                  .add(CartIndex(index: index));
+                                              // context
+                                              //     .read<CounterBloc>()
+                                              //     .add(CounterIncrementPressed());
+                                              // vm.totalCartItem =
+                                              //     (vm.totalCartItem! + 1);
+                                              // print("dsdfdsfdfd");
+                                              // vm.add(
+                                              //     AddToCartClicked(index: index));
+                                              // vm.index = index;
+                                              //vm.addToCart(index);
+                                            },
+                                            child: CircleAvatar(
+                                              backgroundColor:
+                                                  AppTheme.primaryColor,
+                                              radius: 20,
+                                              child: const ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(50)),
+                                                  child: Icon(
+                                                    Icons.add,
+                                                    color: Colors.white,
+                                                  )),
+                                            ),
+                                          ),
+                                  );
+                                },
                               ),
                       ],
                     );
@@ -261,7 +353,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 hintText: "খুঁজুন",
                 controller: vm.searchController,
                 fillColor: Colors.white,
-                focusNode: vm.focusNode,
                 isFilled: true,
                 onFieldSubmitted: (v) {
                   offset = 0;
