@@ -1,11 +1,9 @@
-
-  
 # Qtec_Shop
 <table>
   <tr>
     <td>
       <img src="assets/qtec_logo.png" height=70 align="left"> 
-    <p>A Product Selling App
+    <p>A Selling App
       </p>
     </td>
   </tr>
@@ -38,7 +36,7 @@
 ## Download APK
 <a id="raw-url" href="https://drive.google.com/uc?export=download&id=1B0M2iNp2FEToBYoP1kEigx12utorM7fy">Click here</a>
 
-## Project Environment:
+## Project Environment
 ```
 => Flutter (Channel stable, 2.10.3)
 => Android Studio (version 2021.2.1)
@@ -54,7 +52,7 @@
 ├── Product Details
 ```
 
-## Used Package:
+## Used Package
 ```
 1. flutter_bloc - for state management
 2. bot_toast - for loader and toast message
