@@ -136,10 +136,7 @@ class _ProductDetailsWidgetState extends State<ProductDetailsWidget> {
         spaceAround,
         Text("${StringResources.distributorText} ",
             style: TextStyle(fontSize: 16, color: AppTheme.greyColor)),
-        Text(
-            productDetails?.model == "" || productDetails?.model == null
-                ? StringResources.qtecrText
-                : productDetails?.model ?? "",
+        Text(productDetails?.seller ?? StringResources.qtecrText,
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
       ],
     );
